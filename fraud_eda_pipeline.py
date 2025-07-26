@@ -344,8 +344,22 @@ class FraudEDACapstone:
         print("=" * 30)
         
         # Prepare features for analysis
-        feature_cols = [col for col in self.numerical_cols + self.categorical_cols 
-                       if col in self.df.columns and col != target_col]
+        all_potential_features = self.numerical_cols + self.categorical_cols
+        
+        # Remove duplicates and ensure target column is excluded
+        feature_cols = []
+        seen_cols = set()
+        
+        for col in all_potential_features:
+            if (col in self.df.columns and 
+                col != target_col and 
+                col not in seen_cols and
+                not col.startswith('Unnamed')):  # Skip unnamed columns
+                feature_cols.append(col)
+                seen_cols.add(col)
+        
+        print(f"Features for analysis: {len(feature_cols)} columns")
+        print(f"Excluded target: {target_col}")
         
         if len(feature_cols) == 0:
             print("No features available for importance analysis")
@@ -353,7 +367,22 @@ class FraudEDACapstone:
         
         # Encode categorical variables for analysis
         X_encoded = self.df[feature_cols].copy()
+        
+        # Ensure target is a 1D array
+        if isinstance(target_col, list):
+            target_col = target_col[0]  # Take first column if list
+        
         y = self.df[target_col].copy()
+        
+        # Ensure y is 1D
+        if hasattr(y, 'values'):
+            y = y.values
+        if len(y.shape) > 1:
+            y = y.flatten()
+        
+        print(f"Target variable: {target_col}")
+        print(f"Target shape: {y.shape}")
+        print(f"Target unique values: {np.unique(y)}")
         
         # Encode categorical columns
         label_encoders = {}
@@ -368,14 +397,24 @@ class FraudEDACapstone:
         print("-" * 35)
         
         try:
-            if y.dtype in ['int64', 'float64'] and y.nunique() > 2:
-                # Regression
-                rf = RandomForestRegressor(n_estimators=100, random_state=42)
-            else:
+            # Check if we have enough samples
+            if len(y) < 10:
+                print("Not enough samples for Random Forest analysis")
+                raise ValueError("Insufficient samples")
+            
+            # Determine if classification or regression
+            unique_values = np.unique(y)
+            if len(unique_values) <= 10 and all(isinstance(val, (int, np.integer)) for val in unique_values):
                 # Classification
                 from sklearn.ensemble import RandomForestClassifier
-                rf = RandomForestClassifier(n_estimators=100, random_state=42)
+                rf = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=1)
+                print(f"Using Random Forest Classifier ({len(unique_values)} classes)")
+            else:
+                # Regression
+                rf = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=1)
+                print(f"Using Random Forest Regressor")
             
+            # Fit the model
             rf.fit(X_encoded, y)
             
             rf_importance = pd.DataFrame({
@@ -397,11 +436,19 @@ class FraudEDACapstone:
         print("-" * 30)
         
         try:
-            if y.nunique() <= 20:  # Classification or few unique values
+            # Check for sufficient samples and variance
+            if len(y) < 10:
+                print("Not enough samples for Mutual Information analysis")
+                raise ValueError("Insufficient samples")
+            
+            unique_values = np.unique(y)
+            if len(unique_values) <= 20:  # Classification or few unique values
                 mi_scores = mutual_info_classif(X_encoded, y, random_state=42)
+                print(f"Using Mutual Information Classification ({len(unique_values)} classes)")
             else:  # Regression
                 from sklearn.feature_selection import mutual_info_regression
                 mi_scores = mutual_info_regression(X_encoded, y, random_state=42)
+                print(f"Using Mutual Information Regression")
             
             mi_importance = pd.DataFrame({
                 'feature': feature_cols,
