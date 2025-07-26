@@ -14,13 +14,14 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class ModelComparison:
-    def __init__(self, X, y, test_size=0.2, random_state=42, cv_folds=5):
+    def __init__(self, X, y, feature_names=None, test_size=0.2, random_state=42, cv_folds=5):
         """
         Initialize the model comparison framework
         
         Parameters:
         X: Feature matrix
         y: Target vector
+        feature_names: List of feature names (optional)
         test_size: Test set proportion
         random_state: Random seed for reproducibility
         cv_folds: Number of cross-validation folds
@@ -29,6 +30,12 @@ class ModelComparison:
         self.y = y
         self.random_state = random_state
         self.cv_folds = cv_folds
+        
+        # Store feature names
+        if feature_names is not None:
+            self.feature_names = feature_names
+        else:
+            self.feature_names = [f'feature_{i}' for i in range(X.shape[1])]
         
         # Initialize CV strategy
         self.cv = cv_folds
@@ -58,7 +65,6 @@ class ModelComparison:
             'Logistic Regression': LogisticRegression(random_state=random_state, class_weight='balanced'),
             'Decision Tree': DecisionTreeClassifier(random_state=random_state, class_weight='balanced'),
             'Random Forest': RandomForestClassifier(random_state=random_state, class_weight='balanced'),
-            'Extra Trees': ExtraTreesClassifier(random_state=random_state, class_weight='balanced'),
             'SVM': SVC(random_state=random_state, class_weight='balanced', probability=True),
             'Neural Network': MLPClassifier(random_state=random_state, max_iter=1000)
         }
@@ -299,7 +305,7 @@ class ModelComparison:
         """
         Plot feature importance for tree-based models
         """
-        tree_models = ['Random Forest', 'Extra Trees', 'Decision Tree']
+        tree_models = ['Random Forest', 'Decision Tree']
         available_models = [name for name in tree_models if name in self.fitted_models]
         
         if not available_models:
@@ -317,14 +323,13 @@ class ModelComparison:
             # Get feature importance
             if hasattr(model, 'feature_importances_'):
                 importance = model.feature_importances_
-                feature_names = [f'feature_{i}' for i in range(len(importance))]
                 
                 # Sort and get top N
                 indices = np.argsort(importance)[::-1][:top_n]
                 
                 axes[i].barh(range(top_n), importance[indices])
                 axes[i].set_yticks(range(top_n))
-                axes[i].set_yticklabels([feature_names[j] for j in indices])
+                axes[i].set_yticklabels([self.feature_names[j] for j in indices])
                 axes[i].set_xlabel('Importance')
                 axes[i].set_title(f'{model_name}\nFeature Importance')
                 axes[i].invert_yaxis()
