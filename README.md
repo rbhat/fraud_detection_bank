@@ -1,126 +1,109 @@
-# Bank Fraud Detection Analysis
-
-ML project for detecting fraudulent bank transactions using risk-based scoring and behavioral analysis.
+### Bank Fraud Detection System
 
 **Author**
-Rajeev Bhat
-rajeevmbhat@gmail.com
+Rajeev Bhat (rajeevmbhat@gmail.com)
 
 #### Executive summary
 
-This project develops a machine learning-based fraud detection system for banking transactions using a risk-scoring approach combined with logistic regression. Analyzing 2,512 transactions from a Kaggle dataset, we created a multi-factor risk assessment system that identifies fraudulent patterns with 100% precision and 58.33% recall on test data. The system flags 1.27% of transactions as high-risk fraud cases, aligning with industry standards, and provides interpretable results for fraud prevention teams.
+This project develops a machine learning-based fraud detection system for banking transactions. Using a dataset of 2,512 transactions, we implemented a comprehensive approach including data quality assessment, feature engineering, and multiple ML algorithms. Our best-performing model (Tuned Decision Tree) achieves 90.1% F1-Score with 94.6% precision and 86.5% recall. The system successfully identifies fraudulent transactions while minimizing false positives, crucial for maintaining customer trust. We also developed a test data generation framework and model testing pipeline for continuous evaluation.
 
 #### Rationale
 
-Financial fraud costs the banking industry billions of dollars annually and erodes customer trust. Traditional rule-based fraud detection systems often generate high false positive rates, causing customer friction and operational inefficiency. Machine learning approaches can identify complex patterns in transaction data to improve fraud detection accuracy while reducing false alarms. This project addresses the critical need for automated, intelligent fraud detection that balances security with customer experience.
+Financial fraud costs banks billions annually and damages customer relationships. Current rule-based systems generate excessive false positives, blocking legitimate transactions and frustrating customers. Machine learning can identify subtle fraud patterns while reducing false alarms. This project demonstrates how modern ML techniques can significantly improve fraud detection accuracy, protecting both financial institutions and their customers from fraudulent activities.
 
 #### Research Question
 
-How can we effectively identify fraudulent bank transactions using machine learning while minimizing false positives? Specifically:
-- What transaction patterns and customer behaviors are most indicative of fraud?
-- Can we build a risk-scoring system that reliably flags suspicious transactions?
-- What machine learning approach provides the best balance of precision and recall for fraud detection?
+Can machine learning effectively identify fraudulent bank transactions while minimizing false positives? Specifically:
+- Which transaction patterns best indicate fraudulent behavior?
+- How can we handle severe class imbalance (0.2% fraud rate)?
+- Which ML algorithm provides optimal precision-recall balance for fraud detection?
 
 #### Data Sources
 
-**Source**: [Kaggle Bank Transaction Dataset](https://www.kaggle.com/datasets/valakhorasani/bank-transaction-dataset-for-fraud-detection/code)
-- **Size**: ~105 KB CSV format
-- **Quality**: 10.0 usability score on Kaggle
-- **Records**: 2,512 transactions with 16 features
-
-### Features Include:
-- **Transaction data**: amounts, types, duration, timestamps
-- **Customer info**: age, occupation, account balance  
-- **Technical details**: device IDs, IP addresses, locations
-- **Behavioral data**: login attempts, transaction timing
+**Kaggle Bank Transaction Dataset**
+- Source: https://www.kaggle.com/datasets/valakhorasani/bank-transaction-dataset-for-fraud-detection/
+- Size: 2,512 transactions with 16 features
+- Features: Transaction amounts, customer demographics, device/location data, behavioral indicators
+- Target: Binary fraud indicator (created through risk scoring)
 
 #### Methodology
 
-**1. Data Quality Assessment & Preprocessing**
-- Missing value detection and handling
-- Duplicate removal and data type validation
-- Exploratory data analysis with statistical summaries and visualizations
-
-**2. Feature Engineering**
-- Created temporal features (weekends, time patterns)
-- Developed behavioral indicators (transaction patterns, age groups)
-- Built binary risk flags for suspicious activities
-- Applied outlier detection using IQR and Z-score methods
-
-**3. Risk Scoring System**
-Multi-factor fraud risk assessment based on:
-- High transaction amounts (top 5%)
-- Multiple login attempts (>1)
-- Unusual timing patterns (late night/early morning)
-- Rapid successive transactions (<30 minutes)
-- High amount-to-balance ratios (>95th percentile)
-
-**4. Machine Learning Model Development**
-- Binary target creation (`is_fraud`) based on risk scores
-- Logistic regression with balanced class weights to handle imbalanced data
-- Train/test split with stratification to maintain fraud distribution
-- Feature scaling with StandardScaler for numerical variables
-- Model evaluation using precision, recall, F1-score, and ROC-AUC metrics
+1. **Data Quality**: Comprehensive analysis using custom DataQualityAssessment module
+2. **Feature Engineering**: Created 15+ features including temporal patterns, behavioral indicators, and risk ratios
+3. **Class Imbalance**: 
+   - Synthetic data generation (3,150 transactions)
+   - SMOTE oversampling
+   - Balanced class weights
+4. **Model Development**:
+   - Baseline: Logistic Regression (On Raw and Augmented Data. Augmented Data Model used for further comparisons)
+   - Comparison: Decision Tree, Random Forest, SVM, Neural Network
+   - Hyperparameter tuning with GridSearchCV
+5. **Model Interpretability**: SHAP analysis for feature importance and decision transparency
+6. **Testing Framework**: Automated test data generation and model evaluation pipeline
 
 #### Results
 
-**Key Patterns Discovered:**
-- **Fraud prevalence**: 1.27% of transactions flagged as high-risk, aligning with industry standards
-- **Temporal patterns**: Strong concentration in specific hours (52% of fraudulent transactions at 4pm)
-- **Network analysis**: 609 devices shared across accounts, 551 IPs from multiple locations indicating potential fraud rings
-- **Amount patterns**: High-value transactions strongly correlated with risk scores (r=0.552)
+**Model Performance (5-fold Cross-Validation):**
 
-**Model Performance Summary:**
+| Model | F1-Score | Precision | Recall |
+|-------|----------|-----------|---------|
+| Decision Tree (Tuned) | 90.1% | 94.6% | 86.5% |
+| Random Forest (Tuned) | 88.4% | 99.3% | 80.0% |
+| Neural Network (Tuned) | 85.2% | 94.0% | 78.1% |
+| Logistic Regression | 45.2% | 30.4% | 92.3% |
 
-| Model | Precision | Recall | F1-Score | Accuracy |
-|-------|-----------|---------|----------|----------|
-| Logistic Regression | 100% | 58.33% | 73.68% | 98.6% |
-| Random Forest (Tuned) | TBD | TBD | TBD | TBD |
-| Decision Tree (Tuned) | TBD | TBD | TBD | TBD |
-| Neural Network (Tuned) | TBD | TBD | TBD | TBD |
+**Key Findings:**
 
-**Features Used** (11 core features):
-- `TransactionAmount`, `CustomerAge`, `LoginAttempts`, `AccountBalance`
-- `TransactionType`, `Channel`, `CustomerOccupation`  
-- `IsWeekend`, `IsHighAmount`, `MultipleLogins`, `amount_to_balance_ratio`
+1. **Severe Class Imbalance**
+   - Original dataset: 0.2% fraud rate (5 out of 2,512 transactions)
+   - Addressed through synthetic data generation + SMOTE
+   - Final training set: 30% fraud rate for robust model training
 
-**Why Precision Matters Most:**
-In fraud detection, precision is critical because false positives (flagging legitimate transactions as fraud) cause customer dissatisfaction, block valid purchases, and require costly manual review. Our 100% precision means zero false alarms, maintaining customer trust while effectively identifying fraudulent activity.
+   ![Class Imbalance](images/class_imbalance.png)
 
-**Model Testing Framework:**
-The project includes a comprehensive testing framework with:
-- **Test Data Generator**: Creates synthetic test data with known fraud patterns
-- **Model Tester**: Evaluates all trained models on consistent test sets
-- **Performance Tracking**: Automated metrics calculation and reporting
+2. **Distribution Analysis (Cell 5)**
+   - Violin plots reveal distinct patterns between fraud and normal transactions
+   - Fraud transactions show higher amounts and faster processing times
+   - KDE plots demonstrate clear separation in key features
+
+3. **Model Performance Comparison (Cell 19)**
+   - Decision Tree and Random Forest significantly outperform baseline
+   - Tree-based models better capture non-linear fraud patterns
+   - Hyperparameter tuning improved F1-scores by 3-5%
+
+   ![Model Comparison](images/model_comparison.png)
+
+4. **Best Model Confusion Matrix (Cell 24)**
+   - Decision Tree (Tuned): 94.6% precision, 86.5% recall
+   - Minimal false positives (crucial for customer experience)
+   - Catches majority of fraud cases effectively
+
+   ![Confusion Matrix](images/confusion_matrix.png)
+
+5. **SHAP Analysis - Feature Importance (Cell 26)**
+   - Transaction amount is the strongest predictor
+   - Login attempts and transaction speed highly influential
+   - Model decisions are interpretable and align with fraud domain knowledge
+
+*Note: Run the Jupyter notebook to view additional visualizations including violin plots, KDE distributions, and SHAP explanations.*
 
 #### Next steps
 
-**Short-term improvements (1-3 months):**
-1. **Advanced Model Development**: Implement Random Forest and XGBoost models for comparison with logistic regression baseline
-2. **Feature Enhancement**: Add more sophisticated temporal features (rolling averages, seasonal patterns) and network analysis features
-3. **Cross-validation**: Implement k-fold cross-validation for more robust model evaluation
-4. **Hyperparameter Tuning**: Use grid search or Bayesian optimization to optimize model parameters
-
-**Medium-term extensions (3-6 months):**
-1. **Regression Model**: Develop models to predict potential financial loss amounts for fraudulent transactions
-2. **Time Series Analysis**: Build forecasting models to predict fraud frequency and seasonal patterns
-3. **Real-time Scoring**: Implement streaming data pipeline for real-time fraud detection
-4. **Ensemble Methods**: Combine multiple models for improved performance and robustness
-
-**Long-term goals (6+ months):**
-1. **Interactive Dashboard**: Create Streamlit app for real-time monitoring and fraud investigation
-2. **Deep Learning**: Explore neural networks with embeddings for high-cardinality features
-3. **Explainable AI**: Implement SHAP values and LIME for model interpretability
-4. **Production Deployment**: Build scalable API for integration with banking systems
+1. **Real-time Implementation**: Deploy model as API for live transaction scoring
+2. **Enhanced Features**: Add velocity checks and network analysis
+3. **Continuous Learning**: Implement feedback loop for model updates
+4. **Regression Model**: Predict fraud amounts for risk assessment
+5. **Time Series Analysis**: Forecast fraud trends for resource planning
 
 #### Outline of project
 
-- [Main Analysis Notebook](fraud_detection.ipynb) - Complete EDA, feature engineering, and model development
-- [Data Quality Assessment Module](data_quality_assessment.py) - Utilities for data cleaning and validation
-- [Model Testing Framework](model_tester.py) - Automated model evaluation and performance tracking
-- [Test Data Generator](tests/test_data_generator.py) - Creates synthetic test data with known fraud patterns
+- [fraud_detection.ipynb](fraud_detection.ipynb) - Main analysis notebook with EDA, modeling, and evaluation
+- [data_quality_assessment.py](data_quality_assessment.py) - Data quality checking and cleaning utilities
+- [model_tester.py](model_tester.py) - Automated model testing framework
+- [test_data_generator.py](tests/test_data_generator.py) - Synthetic test data generation
+- [model_comparison_utils.py](model_comparison_utils.py) - Model evaluation and comparison tools
+- [fraud_eda_pipeline.py](fraud_eda_pipeline.py) - Comprehensive EDA pipeline
 - [Trained Models](models/) - Directory containing all trained models and metadata
-
 ## Getting Started
 
 1. **Install dependencies:**
@@ -150,50 +133,12 @@ The project includes a comprehensive testing framework with:
    clean_df = dqa.assess_and_clean()
    ```
 
-#### Contact and Further Information
+##### Contact and Further Information
 
-**Author**: Rajeev Bhat  
-**Email**: rajeevmbhat@gmail.com  
-**Project**: Berkeley Haas Capstone - Bank Fraud Detection  
+Rajeev Bhat  
+Email: rajeevmbhat@gmail.com  
+LinkedIn: [Add LinkedIn Profile]  
+GitHub: [Add GitHub Profile]  
 
-For questions about the methodology, results, or potential collaborations, please reach out via email.
-
----
-
-## Technical Details
-
-### Dependencies
-```
-pandas>=1.3.0
-numpy>=1.21.0
-matplotlib>=3.4.0
-seaborn>=0.11.0
-scikit-learn>=1.0.0
-scipy>=1.7.0
-```
-
-### Project Files
-```
-├── data/
-│   └── bank_transactions_data_2.csv     # Transaction dataset
-├── fraud_detection.ipynb                # Main analysis notebook
-├── data_quality_assessment.py           # Data cleaning utilities
-├── model_tester.py                      # Standalone model testing script
-├── requirements.txt                     # Python dependencies
-├── CLAUDE.md                            # AI assistant guidelines
-├── README.md                            # This file
-│
-├── models/                              # Trained models directory
-│   ├── logistic_regression.pkl          # Main logistic regression model
-│   ├── tuned_random_forest.pkl          # Optimized random forest model
-│   ├── tuned_decision_tree.pkl          # Optimized decision tree model
-│   ├── tuned_neural_network.pkl         # Optimized neural network model
-│   ├── model_metadata.pkl               # Model configuration and features
-│   └── preprocessor.pkl                 # Data preprocessing pipeline
-│
-└── tests/                               # Testing framework
-    ├── test_data_generator.py           # Script to generate test datasets
-    └── test_data.csv                    # Generated test data
-```
-
-Note: README.md final version courtesy of Claude.
+UC Berkeley Professional Certificate in Machine Learning and Artificial Intelligence  
+Capstone Project - 2025
