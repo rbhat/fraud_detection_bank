@@ -1,0 +1,74 @@
+============================================================
+FRAUD DETECTION MODEL PERFORMANCE REPORT
+============================================================
+Test Date: 2025-07-26 17:28:41
+Test Samples: 50
+Expected Fraud Cases: 10
+
+MODEL RANKINGS BY F1-SCORE:
+----------------------------------------
+1. Augmented Logistic Regression
+   F1-Score: 1.000
+   Precision: 1.000 (of 10 fraud predictions, 10 were correct)
+   Recall: 1.000 (detected 10 of 10 actual fraud cases)
+   Accuracy: 1.000
+
+============================================================
+BEST PERFORMING MODEL: Augmented Logistic Regression
+============================================================
+F1-Score: 1.000
+Correctly identified 10 of 10 fraud cases
+False alarms: 0 legitimate transactions flagged as fraud
+
+DETAILED PREDICTIONS (Best Model):
+----------------------------------------
+✓ Transaction TX_TEST_007: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_044: Expected=fraud, Predicted=fraud (prob=1.000)
+✓ Transaction TX_TEST_003: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_016: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_018: Expected=normal, Predicted=normal (prob=0.068)
+✓ Transaction TX_TEST_022: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_019: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_030: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_034: Expected=normal, Predicted=normal (prob=0.001)
+✓ Transaction TX_TEST_050: Expected=fraud, Predicted=fraud (prob=1.000)
+✓ Transaction TX_TEST_039: Expected=normal, Predicted=normal (prob=0.014)
+✓ Transaction TX_TEST_017: Expected=normal, Predicted=normal (prob=0.122)
+✓ Transaction TX_TEST_001: Expected=normal, Predicted=normal (prob=0.039)
+✓ Transaction TX_TEST_009: Expected=normal, Predicted=normal (prob=0.081)
+✓ Transaction TX_TEST_046: Expected=fraud, Predicted=fraud (prob=1.000)
+✓ Transaction TX_TEST_021: Expected=normal, Predicted=normal (prob=0.022)
+✓ Transaction TX_TEST_023: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_049: Expected=fraud, Predicted=fraud (prob=1.000)
+✓ Transaction TX_TEST_037: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_028: Expected=normal, Predicted=normal (prob=0.016)
+✓ Transaction TX_TEST_014: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_043: Expected=fraud, Predicted=fraud (prob=0.997)
+✓ Transaction TX_TEST_033: Expected=normal, Predicted=normal (prob=0.378)
+✓ Transaction TX_TEST_025: Expected=normal, Predicted=normal (prob=0.002)
+✓ Transaction TX_TEST_006: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_041: Expected=fraud, Predicted=fraud (prob=1.000)
+✓ Transaction TX_TEST_010: Expected=normal, Predicted=normal (prob=0.122)
+✓ Transaction TX_TEST_032: Expected=normal, Predicted=normal (prob=0.081)
+✓ Transaction TX_TEST_020: Expected=normal, Predicted=normal (prob=0.005)
+✓ Transaction TX_TEST_040: Expected=normal, Predicted=normal (prob=0.014)
+✓ Transaction TX_TEST_035: Expected=normal, Predicted=normal (prob=0.078)
+✓ Transaction TX_TEST_011: Expected=normal, Predicted=normal (prob=0.001)
+✓ Transaction TX_TEST_026: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_048: Expected=fraud, Predicted=fraud (prob=1.000)
+✓ Transaction TX_TEST_027: Expected=normal, Predicted=normal (prob=0.005)
+✓ Transaction TX_TEST_002: Expected=normal, Predicted=normal (prob=0.002)
+✓ Transaction TX_TEST_012: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_004: Expected=normal, Predicted=normal (prob=0.008)
+✓ Transaction TX_TEST_042: Expected=fraud, Predicted=fraud (prob=1.000)
+✓ Transaction TX_TEST_005: Expected=normal, Predicted=normal (prob=0.045)
+✓ Transaction TX_TEST_008: Expected=normal, Predicted=normal (prob=0.014)
+✓ Transaction TX_TEST_029: Expected=normal, Predicted=normal (prob=0.001)
+✓ Transaction TX_TEST_015: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_024: Expected=normal, Predicted=normal (prob=0.047)
+✓ Transaction TX_TEST_045: Expected=fraud, Predicted=fraud (prob=0.985)
+✓ Transaction TX_TEST_036: Expected=normal, Predicted=normal (prob=0.002)
+✓ Transaction TX_TEST_047: Expected=fraud, Predicted=fraud (prob=1.000)
+✓ Transaction TX_TEST_031: Expected=normal, Predicted=normal (prob=0.000)
+✓ Transaction TX_TEST_013: Expected=normal, Predicted=normal (prob=0.001)
+✓ Transaction TX_TEST_038: Expected=normal, Predicted=normal (prob=0.001)

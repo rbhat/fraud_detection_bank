@@ -8,9 +8,9 @@ import pandas as pd
 import numpy as np
 import joblib
 import os
-from datetime import datetime
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from typing import Dict, List, Tuple, Any
+from datetime import datetime
 
 
 class ModelTester:
@@ -76,95 +76,6 @@ class ModelTester:
         
         print(f"\nSuccessfully loaded {len(self.models)} models")
     
-    def create_test_data(self, n_samples: int = 10, fraud_rate: float = 0.3) -> pd.DataFrame:
-        """
-        Create synthetic test data with known labels.
-        
-        Args:
-            n_samples (int): Number of test samples to generate
-            fraud_rate (float): Proportion of fraud cases in test data
-            
-        Returns:
-            pd.DataFrame: Test data with expected_result column
-        """
-        np.random.seed(42)
-        n_fraud = int(n_samples * fraud_rate)
-        n_normal = n_samples - n_fraud
-        
-        test_records = []
-        
-        # Generate normal transactions
-        for i in range(n_normal):
-            record = self._generate_transaction(is_fraud=False, index=i)
-            test_records.append(record)
-        
-        # Generate fraud transactions
-        for i in range(n_fraud):
-            record = self._generate_transaction(is_fraud=True, index=i + n_normal)
-            test_records.append(record)
-        
-        # Shuffle the records
-        np.random.shuffle(test_records)
-        
-        # Create DataFrame
-        test_df = pd.DataFrame(test_records)
-        
-        # Save to CSV
-        test_df.to_csv('test_data.csv', index=False)
-        print(f"✓ Created test data with {n_samples} samples ({n_fraud} fraud, {n_normal} normal)")
-        print(f"✓ Saved to test_data.csv")
-        
-        return test_df
-    
-    def _generate_transaction(self, is_fraud: bool, index: int) -> dict:
-        """Generate a single transaction record."""
-        base_date = datetime(2023, 1, 1)
-        
-        if is_fraud:
-            # Fraud patterns
-            amount = np.random.lognormal(7, 1.5)  # Higher amounts
-            login_attempts = np.random.choice([3, 4, 5], p=[0.4, 0.4, 0.2])
-            duration = np.random.choice([15, 20, 25], p=[0.5, 0.3, 0.2])
-            channel = np.random.choice(['Online', 'ATM'], p=[0.7, 0.3])
-            age = np.random.randint(18, 45)
-            balance = np.random.lognormal(6, 1)  # Lower balance
-        else:
-            # Normal patterns
-            amount = np.random.lognormal(5, 1)  # Normal amounts
-            login_attempts = np.random.choice([1, 2], p=[0.9, 0.1])
-            duration = np.random.choice([60, 90, 120], p=[0.3, 0.4, 0.3])
-            channel = np.random.choice(['Online', 'ATM', 'Branch'], p=[0.33, 0.33, 0.34])
-            age = np.random.randint(25, 65)
-            balance = np.random.lognormal(8, 1)  # Higher balance
-        
-        transaction_date = base_date.replace(
-            month=np.random.randint(1, 13),
-            day=np.random.randint(1, 28),
-            hour=np.random.randint(0, 24),
-            minute=np.random.randint(0, 60)
-        )
-        
-        previous_date = transaction_date - pd.Timedelta(days=np.random.randint(1, 30))
-        
-        return {
-            'TransactionID': f'TX_TEST_{index+1:03d}',
-            'AccountID': f'AC{np.random.randint(10000, 99999)}',
-            'TransactionAmount': round(amount, 2),
-            'TransactionDate': transaction_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'TransactionType': np.random.choice(['Debit', 'Credit'], p=[0.7, 0.3]),
-            'Location': np.random.choice(['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix']),
-            'DeviceID': f'D{np.random.randint(100000, 999999)}',
-            'IP Address': f'{np.random.randint(1, 255)}.{np.random.randint(0, 255)}.{np.random.randint(0, 255)}.{np.random.randint(1, 255)}',
-            'MerchantID': f'M{np.random.randint(100, 999)}',
-            'Channel': channel,
-            'CustomerAge': age,
-            'CustomerOccupation': np.random.choice(['Engineer', 'Doctor', 'Student', 'Retired']),
-            'TransactionDuration': duration,
-            'LoginAttempts': login_attempts,
-            'AccountBalance': round(balance, 2),
-            'PreviousTransactionDate': previous_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'expected_result': 'fraud' if is_fraud else 'normal'
-        }
     
     def load_test_data(self, filepath: str = 'test_data.csv'):
         """
@@ -361,22 +272,25 @@ class ModelTester:
             self.results.to_csv(filepath, index=False)
             print(f"✓ Saved results to {filepath}")
     
-    def run_complete_test(self, n_test_samples: int = 10, fraud_rate: float = 0.3):
+    def run_complete_test(self, test_data_path: str = 'test_data.csv'):
         """
-        Run a complete test cycle: create data, load models, predict, and evaluate.
+        Run a complete test cycle: load data, load models, predict, and evaluate.
         
         Args:
-            n_test_samples (int): Number of test samples to generate
-            fraud_rate (float): Proportion of fraud cases in test data
+            test_data_path (str): Path to test data CSV file
         """
         print("RUNNING COMPLETE MODEL TEST")
         print("="*40)
         
-        # Create test data
-        self.create_test_data(n_samples=n_test_samples, fraud_rate=fraud_rate)
+        # Check if test data exists
+        if not os.path.exists(test_data_path):
+            raise FileNotFoundError(
+                f"Test data not found at {test_data_path}. "
+                "Please generate test data using: python tests/test_data_generator.py"
+            )
         
         # Load test data
-        self.load_test_data()
+        self.load_test_data(test_data_path)
         
         # Load all models
         self.load_models()

@@ -1,0 +1,2 @@
+Model,Accuracy,Precision,Recall,F1-Score,True Positives,False Positives,True Negatives,False Negatives,Total Predictions,Fraud Predictions
+Augmented Logistic Regression,1.0,1.0,1.0,1.0,10,0,40,0,50,10
