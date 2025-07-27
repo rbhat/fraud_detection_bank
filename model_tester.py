@@ -207,13 +207,18 @@ class ModelTester:
                 'Fraud Predictions': y_pred.sum()
             })
         
-        self.results = pd.DataFrame(results).sort_values('F1-Score', ascending=False)
+        # Check if we have any results
+        if not results:
+            print("WARNING: No model predictions were generated. Check if models were loaded correctly.")
+            self.results = pd.DataFrame()
+        else:
+            self.results = pd.DataFrame(results).sort_values('F1-Score', ascending=False)
         return self.results
     
     def generate_detailed_report(self) -> str:
         """Generate a detailed performance report."""
-        if self.results is None:
-            raise ValueError("No results available. Run evaluate_models() first.")
+        if self.results is None or self.results.empty:
+            return "No results available. No models could be evaluated."
         
         report = []
         report.append("="*60)
@@ -234,6 +239,7 @@ class ModelTester:
         for idx, row in self.results.iterrows():
             rank = idx + 1
             report.append(f"{rank}. {row['Model']}")
+            print("F1-Score: {row['F1-Score']:.3f}")
             report.append(f"   F1-Score: {row['F1-Score']:.3f}")
             report.append(f"   Precision: {row['Precision']:.3f} (of {row['Fraud Predictions']} fraud predictions, {row['True Positives']} were correct)")
             report.append(f"   Recall: {row['Recall']:.3f} (detected {row['True Positives']} of {expected_fraud} actual fraud cases)")
@@ -309,3 +315,42 @@ class ModelTester:
         self.save_results()
         
         return results
+
+
+if __name__ == "__main__":
+    """Main method to run model testing with default values."""
+    # Create tester instance with default models directory
+    tester = ModelTester(models_dir='models')
+    
+    # Set default test data path
+    test_data_path = 'tests/test_data.csv'
+    
+    try:
+        # Run complete test cycle
+        print("\n" + "="*60)
+        print("FRAUD DETECTION MODEL TESTING SCRIPT")
+        print("="*60)
+        print(f"\nUsing test data from: {test_data_path}")
+        print(f"Loading models from: {tester.models_dir}")
+        
+        # Run the test
+        results = tester.run_complete_test(test_data_path=test_data_path)
+        
+        print("\n" + "="*60)
+        print("TEST COMPLETED SUCCESSFULLY")
+        print("="*60)
+        
+        # Display summary if results exist
+        if not results.empty:
+            print("\nModel Performance Summary:")
+            print(results[['Model', 'F1-Score', 'Precision', 'Recall', 'Accuracy']].to_string(index=False))
+        
+    except FileNotFoundError as e:
+        print(f"\nERROR: {e}")
+        print("\nTo generate test data, run:")
+        print("  python tests/test_data_generator.py")
+        
+    except Exception as e:
+        print(f"\nERROR: An unexpected error occurred: {e}")
+        import traceback
+        traceback.print_exc()
