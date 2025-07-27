@@ -76,7 +76,7 @@ narwhals==1.25.2
 nbformat==5.10.4
 nbimporter==0.3.4
 nest-asyncio==1.6.0
-numpy==2.2.2
+numpy==1.26.4
 opencv-python==4.11.0.86
 opencv-python-headless==4.11.0.86
 opentelemetry-api==1.32.1
@@ -150,3 +150,4 @@ wrapt==1.17.2
 xgboost==3.0.0
 yarl==1.20.0
 zipp==3.21.0
+shap==0.44.1

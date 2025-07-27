@@ -70,11 +70,14 @@ Multi-factor fraud risk assessment based on:
 - **Network analysis**: 609 devices shared across accounts, 551 IPs from multiple locations indicating potential fraud rings
 - **Amount patterns**: High-value transactions strongly correlated with risk scores (r=0.552)
 
-**Model Performance - Logistic Regression:**
-- **Precision**: 100% - Every flagged transaction was actually fraudulent (zero false positives)
-- **Recall**: 58.33% - Successfully identified 7 out of 12 actual fraud cases
-- **F1-Score**: 73.68% - Balanced measure showing good overall performance
-- **ROC-AUC**: 79.17% - Strong ability to distinguish between fraud and legitimate transactions
+**Model Performance Summary:**
+
+| Model | Precision | Recall | F1-Score | Accuracy |
+|-------|-----------|---------|----------|----------|
+| Logistic Regression | 100% | 58.33% | 73.68% | 98.6% |
+| Random Forest (Tuned) | TBD | TBD | TBD | TBD |
+| Decision Tree (Tuned) | TBD | TBD | TBD | TBD |
+| Neural Network (Tuned) | TBD | TBD | TBD | TBD |
 
 **Features Used** (11 core features):
 - `TransactionAmount`, `CustomerAge`, `LoginAttempts`, `AccountBalance`
@@ -83,6 +86,12 @@ Multi-factor fraud risk assessment based on:
 
 **Why Precision Matters Most:**
 In fraud detection, precision is critical because false positives (flagging legitimate transactions as fraud) cause customer dissatisfaction, block valid purchases, and require costly manual review. Our 100% precision means zero false alarms, maintaining customer trust while effectively identifying fraudulent activity.
+
+**Model Testing Framework:**
+The project includes a comprehensive testing framework with:
+- **Test Data Generator**: Creates synthetic test data with known fraud patterns
+- **Model Tester**: Evaluates all trained models on consistent test sets
+- **Performance Tracking**: Automated metrics calculation and reporting
 
 #### Next steps
 
@@ -106,9 +115,11 @@ In fraud detection, precision is critical because false positives (flagging legi
 
 #### Outline of project
 
-- [Main Analysis Notebook](fraud_detection.ipynb) - Complete EDA, feature engineering, and model development (21 cells)
+- [Main Analysis Notebook](fraud_detection.ipynb) - Complete EDA, feature engineering, and model development
 - [Data Quality Assessment Module](data_quality_assessment.py) - Utilities for data cleaning and validation
-- [Trained Model](fraud_detection_model.pkl) - Serialized logistic regression model for deployment
+- [Model Testing Framework](model_tester.py) - Automated model evaluation and performance tracking
+- [Test Data Generator](tests/test_data_generator.py) - Creates synthetic test data with known fraud patterns
+- [Trained Models](models/) - Directory containing all trained models and metadata
 
 ## Getting Started
 
@@ -122,7 +133,17 @@ In fraud detection, precision is critical because false positives (flagging legi
    jupyter notebook fraud_detection.ipynb
    ```
 
-3. **Use data quality tools:**
+3. **Generate test data:**
+   ```bash
+   python tests/test_data_generator.py
+   ```
+
+4. **Test trained models:**
+   ```bash
+   python model_tester.py
+   ```
+
+5. **Use data quality tools:**
    ```python
    from data_quality_assessment import DataQualityAssessment
    dqa = DataQualityAssessment(df)
@@ -155,11 +176,24 @@ scipy>=1.7.0
 ```
 ├── data/
 │   └── bank_transactions_data_2.csv     # Transaction dataset
-├── fraud_detection.ipynb                # Main analysis notebook (21 cells)
+├── fraud_detection.ipynb                # Main analysis notebook
 ├── data_quality_assessment.py           # Data cleaning utilities
-├── fraud_detection_model.pkl            # Trained logistic regression model
+├── model_tester.py                      # Standalone model testing script
 ├── requirements.txt                     # Python dependencies
-└── README.md
+├── CLAUDE.md                            # AI assistant guidelines
+├── README.md                            # This file
+│
+├── models/                              # Trained models directory
+│   ├── logistic_regression.pkl          # Main logistic regression model
+│   ├── tuned_random_forest.pkl          # Optimized random forest model
+│   ├── tuned_decision_tree.pkl          # Optimized decision tree model
+│   ├── tuned_neural_network.pkl         # Optimized neural network model
+│   ├── model_metadata.pkl               # Model configuration and features
+│   └── preprocessor.pkl                 # Data preprocessing pipeline
+│
+└── tests/                               # Testing framework
+    ├── test_data_generator.py           # Script to generate test datasets
+    └── test_data.csv                    # Generated test data
 ```
 
 Note: README.md final version courtesy of Claude.
