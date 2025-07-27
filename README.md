@@ -230,8 +230,7 @@ The `tests/` directory contains comprehensive unit tests:
 
 Rajeev Bhat  
 Email: rajeevmbhat@gmail.com  
-LinkedIn: [Add LinkedIn Profile]  
-GitHub: [Add GitHub Profile]  
+LinkedIn: www.linkedin.com/in/rajeevbhat1
 
 UC Berkeley Professional Certificate in Machine Learning and Artificial Intelligence  
 Capstone Project - 2025
