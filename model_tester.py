@@ -39,9 +39,13 @@ class ModelTester:
         self.test_data = None
         self.predictions = {}
         self.results = None
+        self.preprocessor = None
         
         # Load metadata
         self._load_metadata()
+        
+        # Load preprocessor
+        self._load_preprocessor()
         
     def _load_metadata(self):
         """Load model metadata from pickle file."""
@@ -51,6 +55,15 @@ class ModelTester:
             print(f"✓ Loaded metadata from {metadata_path}")
         else:
             raise FileNotFoundError(f"Model metadata not found at {metadata_path}")
+    
+    def _load_preprocessor(self):
+        """Load the preprocessor used during model training."""
+        preprocessor_path = os.path.join(self.models_dir, 'preprocessor.pkl')
+        if os.path.exists(preprocessor_path):
+            self.preprocessor = joblib.load(preprocessor_path)
+            print(f"✓ Loaded preprocessor from {preprocessor_path}")
+        else:
+            print(f"⚠ Warning: Preprocessor not found at {preprocessor_path}")
     
     def load_models(self, model_names: List[str] = None):
         """
@@ -62,19 +75,29 @@ class ModelTester:
         if model_names is None:
             model_names = list(self.metadata['model_paths'].keys())
         
+        print(f"\nDEBUG: Available models in metadata:")
+        for name, path in self.metadata['model_paths'].items():
+            print(f"  - {name}: {path}")
+        
         print(f"\nLoading {len(model_names)} models...")
         for name in model_names:
             if name in self.metadata['model_paths']:
                 path = self.metadata['model_paths'][name]
                 if os.path.exists(path):
-                    self.models[name] = joblib.load(path)
-                    print(f"  ✓ Loaded {name}")
+                    try:
+                        self.models[name] = joblib.load(path)
+                        print(f"  ✓ Loaded {name} from {path}")
+                    except Exception as e:
+                        print(f"  ✗ Error loading {name} from {path}: {str(e)}")
                 else:
                     print(f"  ✗ Model file not found: {path}")
             else:
                 print(f"  ✗ Unknown model: {name}")
         
         print(f"\nSuccessfully loaded {len(self.models)} models")
+        print(f"DEBUG: Models loaded into self.models:")
+        for name in self.models.keys():
+            print(f"  - {name}")
     
     
     def load_test_data(self, filepath: str = 'test_data.csv'):
@@ -150,9 +173,22 @@ class ModelTester:
         
         for model_name, model in self.models.items():
             try:
-                # Make predictions
-                y_pred = model.predict(X_test)
-                y_pred_proba = model.predict_proba(X_test)[:, 1]
+                # Check if this is a pipeline model (has predict method on the model directly)
+                # or if it needs preprocessing first
+                if hasattr(model, 'named_steps') and 'preprocessor' in model.named_steps:
+                    # This is a pipeline model (like Logistic Regression) - use raw features
+                    y_pred = model.predict(X_test)
+                    y_pred_proba = model.predict_proba(X_test)[:, 1]
+                else:
+                    # This is a standalone model that needs preprocessed features
+                    if self.preprocessor is not None:
+                        X_test_preprocessed = self.preprocessor.transform(X_test)
+                        y_pred = model.predict(X_test_preprocessed)
+                        y_pred_proba = model.predict_proba(X_test_preprocessed)[:, 1]
+                    else:
+                        # Fallback to raw features if no preprocessor
+                        y_pred = model.predict(X_test)
+                        y_pred_proba = model.predict_proba(X_test)[:, 1]
                 
                 self.predictions[model_name] = {
                     'predictions': y_pred,
@@ -239,7 +275,6 @@ class ModelTester:
         for idx, row in self.results.iterrows():
             rank = idx + 1
             report.append(f"{rank}. {row['Model']}")
-            print("F1-Score: {row['F1-Score']:.3f}")
             report.append(f"   F1-Score: {row['F1-Score']:.3f}")
             report.append(f"   Precision: {row['Precision']:.3f} (of {row['Fraud Predictions']} fraud predictions, {row['True Positives']} were correct)")
             report.append(f"   Recall: {row['Recall']:.3f} (detected {row['True Positives']} of {expected_fraud} actual fraud cases)")
@@ -254,21 +289,61 @@ class ModelTester:
         report.append(f"F1-Score: {best_model['F1-Score']:.3f}")
         report.append(f"Correctly identified {best_model['True Positives']} of {expected_fraud} fraud cases")
         report.append(f"False alarms: {best_model['False Positives']} legitimate transactions flagged as fraud")
-        
-        # Detailed predictions for best model
         report.append("")
-        report.append("DETAILED PREDICTIONS (Best Model):")
-        report.append("-"*40)
         
-        best_predictions = self.predictions[best_model['Model']]
-        for i, (idx, row) in enumerate(self.test_data.iterrows()):
-            pred = best_predictions['predictions'][i]
-            prob = best_predictions['probabilities'][i]
-            expected = row['expected_result']
-            pred_label = 'fraud' if pred == 1 else 'normal'
+        # Confusion matrices for all models
+        report.append("="*60)
+        report.append("CONFUSION MATRICES FOR ALL MODELS")
+        report.append("="*60)
+        
+        for idx, row in self.results.iterrows():
+            report.append(f"\n{row['Model']}:")
+            report.append("                 Predicted")
+            report.append("                 Normal  Fraud")
+            report.append(f"Actual  Normal     {row['True Negatives']:4d}   {row['False Positives']:4d}")
+            report.append(f"        Fraud      {row['False Negatives']:4d}   {row['True Positives']:4d}")
+            report.append("")
+        
+        # Detailed predictions for each model
+        report.append("="*60)
+        report.append("DETAILED PREDICTIONS BY MODEL")
+        report.append("="*60)
+        
+        # Show misclassifications for each model
+        for model_name in self.predictions.keys():
+            report.append(f"\n{model_name} - Misclassified Transactions:")
+            report.append("-" * 40)
             
-            status = "✓" if pred_label == expected else "✗"
-            report.append(f"{status} Transaction {row['TransactionID']}: Expected={expected}, Predicted={pred_label} (prob={prob:.3f})")
+            predictions = self.predictions[model_name]['predictions']
+            probabilities = self.predictions[model_name]['probabilities']
+            misclassified_count = 0
+            
+            for i, (idx, row) in enumerate(self.test_data.iterrows()):
+                pred = predictions[i]
+                prob = probabilities[i]
+                expected = row['expected_result']
+                pred_label = 'fraud' if pred == 1 else 'normal'
+                
+                if pred_label != expected:
+                    misclassified_count += 1
+                    if misclassified_count <= 5:  # Show first 5 misclassifications
+                        report.append(f"  ✗ {row['TransactionID']}: Expected={expected}, Predicted={pred_label} (prob={prob:.3f})")
+                        report.append(f"     Amount=${row['TransactionAmount']:.2f}, Login={row['LoginAttempts']}, Channel={row['Channel']}")
+            
+            if misclassified_count == 0:
+                report.append("  ✓ No misclassifications!")
+            elif misclassified_count > 5:
+                report.append(f"  ... and {misclassified_count - 5} more misclassifications")
+            
+            report.append(f"  Total misclassified: {misclassified_count}/{len(self.test_data)}")
+        
+        # Model summary table
+        report.append("")
+        report.append("="*60)
+        report.append("MODEL PERFORMANCE SUMMARY TABLE")
+        report.append("="*60)
+        report.append("")
+        report.append(self.results.to_string(index=False))
         
         return "\n".join(report)
     
@@ -278,6 +353,28 @@ class ModelTester:
             self.results.to_csv(filepath, index=False)
             print(f"✓ Saved results to {filepath}")
     
+    def save_all_predictions(self, output_dir: str = 'model_predictions'):
+        """Save detailed predictions for all models to separate CSV files."""
+        import os
+        
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+            
+        for model_name, pred_data in self.predictions.items():
+            # Create a dataframe with test data and predictions
+            pred_df = self.test_data.copy()
+            pred_df['predicted'] = pred_data['predictions']
+            pred_df['predicted_label'] = pred_df['predicted'].map({0: 'normal', 1: 'fraud'})
+            pred_df['probability_fraud'] = pred_data['probabilities']
+            pred_df['correct'] = pred_df['expected_result'] == pred_df['predicted_label']
+            
+            # Save to CSV
+            safe_name = model_name.lower().replace(' ', '_').replace('(', '').replace(')', '')
+            filepath = os.path.join(output_dir, f'{safe_name}_predictions.csv')
+            pred_df.to_csv(filepath, index=False)
+            
+        print(f"✓ Saved predictions for {len(self.predictions)} models to {output_dir}/")
+    
     def run_complete_test(self, test_data_path: str = 'test_data.csv'):
         """
         Run a complete test cycle: load data, load models, predict, and evaluate.
@@ -285,7 +382,7 @@ class ModelTester:
         Args:
             test_data_path (str): Path to test data CSV file
         """
-        print("RUNNING COMPLETE MODEL TEST")
+        print("RUNNING COMPLETE MODEL TEST -- PLEASE WAIT...")
         print("="*40)
         
         # Check if test data exists
@@ -323,7 +420,7 @@ if __name__ == "__main__":
     tester = ModelTester(models_dir='models')
     
     # Set default test data path
-    test_data_path = 'tests/test_data.csv'
+    test_data_path = 'testdata/test_data.csv'
     
     try:
         # Run complete test cycle

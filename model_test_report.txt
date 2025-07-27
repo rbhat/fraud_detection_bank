@@ -1,7 +1,7 @@
 ============================================================
 FRAUD DETECTION MODEL PERFORMANCE REPORT
 ============================================================
-Test Date: 2025-07-27 15:06:57
+Test Date: 2025-07-27 16:21:10
 Test Samples: 150
 Expected Fraud Cases: 45
 
@@ -13,6 +13,24 @@ MODEL RANKINGS BY F1-SCORE:
    Recall: 0.333 (detected 15 of 45 actual fraud cases)
    Accuracy: 0.767
 
+3. Decision Tree (Tuned)
+   F1-Score: 0.406
+   Precision: 0.684 (of 19 fraud predictions, 13 were correct)
+   Recall: 0.289 (detected 13 of 45 actual fraud cases)
+   Accuracy: 0.747
+
+2. Random Forest (Tuned)
+   F1-Score: 0.264
+   Precision: 0.875 (of 8 fraud predictions, 7 were correct)
+   Recall: 0.156 (detected 7 of 45 actual fraud cases)
+   Accuracy: 0.740
+
+4. Neural Network (Tuned)
+   F1-Score: 0.196
+   Precision: 0.833 (of 6 fraud predictions, 5 were correct)
+   Recall: 0.111 (detected 5 of 45 actual fraud cases)
+   Accuracy: 0.727
+
 ============================================================
 BEST PERFORMING MODEL: Logistic Regression
 ============================================================
@@ -20,155 +38,107 @@ F1-Score: 0.462
 Correctly identified 15 of 45 fraud cases
 False alarms: 5 legitimate transactions flagged as fraud
 
-DETAILED PREDICTIONS (Best Model):
+============================================================
+CONFUSION MATRICES FOR ALL MODELS
+============================================================
+
+Logistic Regression:
+                 Predicted
+                 Normal  Fraud
+Actual  Normal      100      5
+        Fraud        30     15
+
+
+Decision Tree (Tuned):
+                 Predicted
+                 Normal  Fraud
+Actual  Normal       99      6
+        Fraud        32     13
+
+
+Random Forest (Tuned):
+                 Predicted
+                 Normal  Fraud
+Actual  Normal      104      1
+        Fraud        38      7
+
+
+Neural Network (Tuned):
+                 Predicted
+                 Normal  Fraud
+Actual  Normal      104      1
+        Fraud        40      5
+
+============================================================
+DETAILED PREDICTIONS BY MODEL
+============================================================
+
+Logistic Regression - Misclassified Transactions:
 ----------------------------------------
-✓ Transaction TX_TEST_074: Expected=normal, Predicted=normal (prob=0.014)
-✓ Transaction TX_TEST_060: Expected=normal, Predicted=normal (prob=0.016)
-✓ Transaction TX_TEST_119: Expected=fraud, Predicted=fraud (prob=0.988)
-✗ Transaction TX_TEST_114: Expected=fraud, Predicted=normal (prob=0.364)
-✗ Transaction TX_EDGE_132: Expected=fraud, Predicted=normal (prob=0.000)
-✗ Transaction TX_TEST_093: Expected=fraud, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_044: Expected=normal, Predicted=normal (prob=0.000)
-✗ Transaction TX_TEST_099: Expected=fraud, Predicted=normal (prob=0.011)
-✗ Transaction TX_TEST_094: Expected=fraud, Predicted=normal (prob=0.388)
-✓ Transaction TX_TEST_084: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_EDGE_136: Expected=normal, Predicted=normal (prob=0.077)
-✗ Transaction TX_EDGE_134: Expected=normal, Predicted=fraud (prob=0.523)
-✓ Transaction TX_TEST_077: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_018: Expected=normal, Predicted=normal (prob=0.017)
-✓ Transaction TX_TEST_087: Expected=fraud, Predicted=fraud (prob=1.000)
-✓ Transaction TX_TEST_076: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_EDGE_149: Expected=normal, Predicted=normal (prob=0.088)
-✗ Transaction TX_TEST_090: Expected=fraud, Predicted=normal (prob=0.056)
-✓ Transaction TX_TEST_016: Expected=normal, Predicted=normal (prob=0.072)
-✓ Transaction TX_TEST_032: Expected=normal, Predicted=normal (prob=0.006)
-✗ Transaction TX_TEST_113: Expected=fraud, Predicted=normal (prob=0.003)
-✓ Transaction TX_TEST_071: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_039: Expected=normal, Predicted=normal (prob=0.378)
-✓ Transaction TX_EDGE_127: Expected=normal, Predicted=normal (prob=0.088)
-✗ Transaction TX_EDGE_141: Expected=normal, Predicted=fraud (prob=0.922)
-✓ Transaction TX_EDGE_135: Expected=normal, Predicted=normal (prob=0.073)
-✓ Transaction TX_TEST_029: Expected=normal, Predicted=normal (prob=0.026)
-✓ Transaction TX_EDGE_126: Expected=normal, Predicted=normal (prob=0.006)
-✗ Transaction TX_EDGE_124: Expected=fraud, Predicted=normal (prob=0.000)
-✓ Transaction TX_EDGE_140: Expected=normal, Predicted=normal (prob=0.009)
-✓ Transaction TX_TEST_006: Expected=normal, Predicted=normal (prob=0.200)
-✓ Transaction TX_TEST_083: Expected=normal, Predicted=normal (prob=0.055)
-✓ Transaction TX_TEST_079: Expected=normal, Predicted=normal (prob=0.000)
-✗ Transaction TX_EDGE_121: Expected=fraud, Predicted=normal (prob=0.032)
-✓ Transaction TX_TEST_014: Expected=normal, Predicted=normal (prob=0.009)
-✓ Transaction TX_TEST_034: Expected=normal, Predicted=normal (prob=0.007)
-✗ Transaction TX_TEST_106: Expected=fraud, Predicted=normal (prob=0.144)
-✗ Transaction TX_TEST_116: Expected=fraud, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_002: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_065: Expected=normal, Predicted=normal (prob=0.107)
-✗ Transaction TX_TEST_109: Expected=fraud, Predicted=normal (prob=0.033)
-✓ Transaction TX_TEST_107: Expected=fraud, Predicted=fraud (prob=0.997)
-✓ Transaction TX_TEST_009: Expected=normal, Predicted=normal (prob=0.017)
-✓ Transaction TX_EDGE_137: Expected=normal, Predicted=normal (prob=0.007)
-✗ Transaction TX_EDGE_147: Expected=fraud, Predicted=normal (prob=0.000)
-✗ Transaction TX_EDGE_142: Expected=fraud, Predicted=normal (prob=0.000)
-✗ Transaction TX_TEST_086: Expected=fraud, Predicted=normal (prob=0.000)
-✗ Transaction TX_TEST_104: Expected=fraud, Predicted=normal (prob=0.001)
-✗ Transaction TX_EDGE_131: Expected=fraud, Predicted=normal (prob=0.006)
-✗ Transaction TX_EDGE_128: Expected=fraud, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_037: Expected=normal, Predicted=normal (prob=0.026)
-✓ Transaction TX_TEST_025: Expected=normal, Predicted=normal (prob=0.009)
-✓ Transaction TX_TEST_036: Expected=normal, Predicted=normal (prob=0.068)
-✓ Transaction TX_TEST_001: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_003: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_058: Expected=normal, Predicted=normal (prob=0.310)
-✓ Transaction TX_TEST_068: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_EDGE_146: Expected=normal, Predicted=normal (prob=0.081)
-✓ Transaction TX_TEST_040: Expected=normal, Predicted=normal (prob=0.139)
-✓ Transaction TX_TEST_049: Expected=normal, Predicted=normal (prob=0.116)
-✓ Transaction TX_TEST_026: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_EDGE_150: Expected=normal, Predicted=normal (prob=0.031)
-✓ Transaction TX_TEST_050: Expected=normal, Predicted=normal (prob=0.039)
-✓ Transaction TX_TEST_105: Expected=fraud, Predicted=fraud (prob=0.999)
-✓ Transaction TX_EDGE_125: Expected=normal, Predicted=normal (prob=0.009)
-✗ Transaction TX_TEST_085: Expected=fraud, Predicted=normal (prob=0.476)
-✓ Transaction TX_TEST_057: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_030: Expected=normal, Predicted=normal (prob=0.002)
-✓ Transaction TX_TEST_056: Expected=normal, Predicted=normal (prob=0.031)
-✓ Transaction TX_EDGE_123: Expected=normal, Predicted=normal (prob=0.213)
-✓ Transaction TX_TEST_024: Expected=normal, Predicted=normal (prob=0.068)
-✓ Transaction TX_TEST_041: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_066: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_021: Expected=normal, Predicted=normal (prob=0.159)
-✓ Transaction TX_TEST_112: Expected=fraud, Predicted=fraud (prob=0.917)
-✓ Transaction TX_TEST_042: Expected=normal, Predicted=normal (prob=0.008)
-✓ Transaction TX_TEST_010: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_EDGE_139: Expected=normal, Predicted=normal (prob=0.070)
-✗ Transaction TX_TEST_089: Expected=fraud, Predicted=normal (prob=0.017)
-✓ Transaction TX_TEST_043: Expected=normal, Predicted=normal (prob=0.315)
-✓ Transaction TX_TEST_022: Expected=normal, Predicted=normal (prob=0.002)
-✓ Transaction TX_TEST_080: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_031: Expected=normal, Predicted=normal (prob=0.001)
-✓ Transaction TX_TEST_061: Expected=normal, Predicted=normal (prob=0.000)
-✗ Transaction TX_TEST_103: Expected=fraud, Predicted=normal (prob=0.103)
-✓ Transaction TX_TEST_013: Expected=normal, Predicted=normal (prob=0.006)
-✓ Transaction TX_TEST_069: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_059: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_067: Expected=normal, Predicted=normal (prob=0.009)
-✓ Transaction TX_TEST_038: Expected=normal, Predicted=normal (prob=0.001)
-✓ Transaction TX_TEST_063: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_019: Expected=normal, Predicted=normal (prob=0.012)
-✗ Transaction TX_TEST_097: Expected=fraud, Predicted=normal (prob=0.007)
-✓ Transaction TX_TEST_095: Expected=fraud, Predicted=fraud (prob=0.997)
-✓ Transaction TX_TEST_111: Expected=fraud, Predicted=fraud (prob=0.997)
-✓ Transaction TX_TEST_045: Expected=normal, Predicted=normal (prob=0.016)
-✓ Transaction TX_TEST_072: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_073: Expected=normal, Predicted=normal (prob=0.351)
-✗ Transaction TX_EDGE_130: Expected=normal, Predicted=fraud (prob=0.701)
-✓ Transaction TX_TEST_035: Expected=normal, Predicted=normal (prob=0.009)
-✓ Transaction TX_TEST_007: Expected=normal, Predicted=normal (prob=0.007)
-✓ Transaction TX_TEST_004: Expected=normal, Predicted=normal (prob=0.011)
-✗ Transaction TX_EDGE_138: Expected=fraud, Predicted=normal (prob=0.000)
-✗ Transaction TX_TEST_110: Expected=fraud, Predicted=normal (prob=0.078)
-✗ Transaction TX_TEST_092: Expected=fraud, Predicted=normal (prob=0.401)
-✓ Transaction TX_TEST_082: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_EDGE_143: Expected=normal, Predicted=normal (prob=0.006)
-✓ Transaction TX_TEST_078: Expected=normal, Predicted=normal (prob=0.006)
-✓ Transaction TX_TEST_053: Expected=normal, Predicted=normal (prob=0.068)
-✓ Transaction TX_TEST_051: Expected=normal, Predicted=normal (prob=0.001)
-✓ Transaction TX_TEST_081: Expected=normal, Predicted=normal (prob=0.000)
-✗ Transaction TX_EDGE_144: Expected=fraud, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_120: Expected=fraud, Predicted=fraud (prob=0.790)
-✓ Transaction TX_TEST_027: Expected=normal, Predicted=normal (prob=0.008)
-✓ Transaction TX_TEST_015: Expected=normal, Predicted=normal (prob=0.008)
-✓ Transaction TX_TEST_023: Expected=normal, Predicted=normal (prob=0.016)
-✗ Transaction TX_TEST_088: Expected=fraud, Predicted=normal (prob=0.029)
-✓ Transaction TX_TEST_062: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_033: Expected=normal, Predicted=normal (prob=0.002)
-✓ Transaction TX_TEST_075: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_102: Expected=fraud, Predicted=fraud (prob=0.647)
-✗ Transaction TX_TEST_100: Expected=fraud, Predicted=normal (prob=0.013)
-✓ Transaction TX_EDGE_122: Expected=normal, Predicted=normal (prob=0.001)
-✓ Transaction TX_TEST_055: Expected=normal, Predicted=normal (prob=0.047)
-✓ Transaction TX_EDGE_133: Expected=normal, Predicted=normal (prob=0.221)
-✓ Transaction TX_TEST_096: Expected=fraud, Predicted=fraud (prob=0.765)
-✓ Transaction TX_TEST_052: Expected=normal, Predicted=normal (prob=0.002)
-✓ Transaction TX_EDGE_129: Expected=normal, Predicted=normal (prob=0.000)
-✗ Transaction TX_TEST_108: Expected=fraud, Predicted=normal (prob=0.003)
-✓ Transaction TX_TEST_048: Expected=normal, Predicted=normal (prob=0.003)
-✓ Transaction TX_TEST_115: Expected=fraud, Predicted=fraud (prob=0.674)
-✓ Transaction TX_TEST_017: Expected=normal, Predicted=normal (prob=0.014)
-✓ Transaction TX_TEST_070: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_012: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_046: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_020: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_EDGE_148: Expected=normal, Predicted=normal (prob=0.033)
-✓ Transaction TX_TEST_047: Expected=normal, Predicted=normal (prob=0.026)
-✓ Transaction TX_TEST_054: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_011: Expected=normal, Predicted=normal (prob=0.001)
-✓ Transaction TX_TEST_098: Expected=fraud, Predicted=fraud (prob=0.903)
-✓ Transaction TX_TEST_117: Expected=fraud, Predicted=fraud (prob=0.981)
-✓ Transaction TX_TEST_091: Expected=fraud, Predicted=fraud (prob=0.963)
-✗ Transaction TX_TEST_064: Expected=normal, Predicted=fraud (prob=0.727)
-✓ Transaction TX_TEST_118: Expected=fraud, Predicted=fraud (prob=0.996)
-✗ Transaction TX_TEST_101: Expected=fraud, Predicted=normal (prob=0.024)
-✗ Transaction TX_EDGE_145: Expected=normal, Predicted=fraud (prob=0.506)
-✓ Transaction TX_TEST_005: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_028: Expected=normal, Predicted=normal (prob=0.000)
-✓ Transaction TX_TEST_008: Expected=normal, Predicted=normal (prob=0.310)
+  ✗ TX_TEST_114: Expected=fraud, Predicted=normal (prob=0.364)
+     Amount=$82.65, Login=2, Channel=Online
+  ✗ TX_EDGE_132: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$97.40, Login=1, Channel=Branch
+  ✗ TX_TEST_093: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$490.36, Login=1, Channel=Branch
+  ✗ TX_TEST_099: Expected=fraud, Predicted=normal (prob=0.011)
+     Amount=$269.94, Login=1, Channel=ATM
+  ✗ TX_TEST_094: Expected=fraud, Predicted=normal (prob=0.388)
+     Amount=$1818.19, Login=3, Channel=Online
+  ... and 30 more misclassifications
+  Total misclassified: 35/150
+
+Random Forest (Tuned) - Misclassified Transactions:
+----------------------------------------
+  ✗ TX_TEST_114: Expected=fraud, Predicted=normal (prob=0.098)
+     Amount=$82.65, Login=2, Channel=Online
+  ✗ TX_EDGE_132: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$97.40, Login=1, Channel=Branch
+  ✗ TX_TEST_093: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$490.36, Login=1, Channel=Branch
+  ✗ TX_TEST_099: Expected=fraud, Predicted=normal (prob=0.010)
+     Amount=$269.94, Login=1, Channel=ATM
+  ✗ TX_TEST_094: Expected=fraud, Predicted=normal (prob=0.455)
+     Amount=$1818.19, Login=3, Channel=Online
+  ... and 34 more misclassifications
+  Total misclassified: 39/150
+
+Decision Tree (Tuned) - Misclassified Transactions:
+----------------------------------------
+  ✗ TX_TEST_114: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$82.65, Login=2, Channel=Online
+  ✗ TX_EDGE_132: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$97.40, Login=1, Channel=Branch
+  ✗ TX_TEST_093: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$490.36, Login=1, Channel=Branch
+  ✗ TX_TEST_099: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$269.94, Login=1, Channel=ATM
+  ✗ TX_TEST_090: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$933.92, Login=4, Channel=Online
+  ... and 33 more misclassifications
+  Total misclassified: 38/150
+
+Neural Network (Tuned) - Misclassified Transactions:
+----------------------------------------
+  ✗ TX_TEST_119: Expected=fraud, Predicted=normal (prob=0.124)
+     Amount=$993.40, Login=3, Channel=ATM
+  ✗ TX_TEST_114: Expected=fraud, Predicted=normal (prob=0.003)
+     Amount=$82.65, Login=2, Channel=Online
+  ✗ TX_EDGE_132: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$97.40, Login=1, Channel=Branch
+  ✗ TX_TEST_093: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$490.36, Login=1, Channel=Branch
+  ✗ TX_TEST_099: Expected=fraud, Predicted=normal (prob=0.000)
+     Amount=$269.94, Login=1, Channel=ATM
+  ... and 36 more misclassifications
+  Total misclassified: 41/150
+
+============================================================
+MODEL PERFORMANCE SUMMARY TABLE
+============================================================
+
+                 Model  Accuracy  Precision   Recall  F1-Score  True Positives  False Positives  True Negatives  False Negatives  Total Predictions  Fraud Predictions
+   Logistic Regression  0.766667   0.750000 0.333333  0.461538              15                5             100               30                150                 20
+ Decision Tree (Tuned)  0.746667   0.684211 0.288889  0.406250              13                6              99               32                150                 19
+ Random Forest (Tuned)  0.740000   0.875000 0.155556  0.264151               7                1             104               38                150                  8
+Neural Network (Tuned)  0.726667   0.833333 0.111111  0.196078               5                1             104               40                150                  6

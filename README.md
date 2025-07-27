@@ -28,7 +28,7 @@ Can machine learning effectively identify fraudulent bank transactions while min
 
 #### Methodology
 
-1. **Data Quality**: Comprehensive analysis using custom DataQualityAssessment module
+1. **Data Quality**: Comprehensive analysis using FraudEDACapstone pipeline and DataQualityAssessment module
 2. **Feature Engineering**: Created 15+ features including temporal patterns, behavioral indicators, and risk ratios
 3. **Class Imbalance**: 
    - Synthetic data generation (3,150 transactions)
@@ -61,29 +61,44 @@ Can machine learning effectively identify fraudulent bank transactions while min
 
    ![Class Imbalance](images/class_imbalance.png)
 
-2. **Distribution Analysis (Cell 5)**
+2. **Distribution Analysis**
    - Violin plots reveal distinct patterns between fraud and normal transactions
    - Fraud transactions show higher amounts and faster processing times
    - KDE plots demonstrate clear separation in key features
 
-3. **Model Performance Comparison (Cell 19)**
+3. **Model Performance Comparison**
    - Decision Tree and Random Forest significantly outperform baseline
    - Tree-based models better capture non-linear fraud patterns
    - Hyperparameter tuning improved F1-scores by 3-5%
-
    ![Model Comparison](images/model_comparison.png)
 
-4. **Best Model Confusion Matrix (Cell 24)**
+   
+4. **GridCV Model Comparison**
+ - Mixed bag; choose model based on what we want
+ - Random Forest has best Precision and best F1 Score by a slight margin
+ - Logistic Regression has best Recall by a wide margin
+   ![GridCV Model Comparison](images/CV_model_comparison.png)
+- Decision Tree and Random Forest both pick Transaction Duration as the most important feature
+   ![Model Comparison](images/feature_importance.png)
+
+5. **Best Model Performance on Test Data**
+- We generate random set of data and evaluate saved models on the Test Data
+- Logistic Regression stands out as the best model
+
+![Model Comparison](images/model_perf_unseen_data.png)
+
+4. **Best Model Confusion Matrix**
    - Decision Tree (Tuned): 94.6% precision, 86.5% recall
    - Minimal false positives (crucial for customer experience)
    - Catches majority of fraud cases effectively
 
    ![Confusion Matrix](images/confusion_matrix.png)
 
-5. **SHAP Analysis - Feature Importance (Cell 26)**
+5. **SHAP Analysis - Feature Importance**
    - Transaction amount is the strongest predictor
    - Login attempts and transaction speed highly influential
    - Model decisions are interpretable and align with fraud domain knowledge
+   ![Shap Summary](images/shap_summary.png)
 
 *Note: Run the Jupyter notebook to view additional visualizations including violin plots, KDE distributions, and SHAP explanations.*
 
@@ -98,12 +113,30 @@ Can machine learning effectively identify fraudulent bank transactions while min
 #### Outline of project
 
 - [fraud_detection.ipynb](fraud_detection.ipynb) - Main analysis notebook with EDA, modeling, and evaluation
+- [fraud_eda_pipeline.py](fraud_eda_pipeline.py) - FraudEDACapstone class for comprehensive exploratory data analysis
 - [data_quality_assessment.py](data_quality_assessment.py) - Data quality checking and cleaning utilities
 - [model_tester.py](model_tester.py) - Automated model testing framework
 - [test_data_generator.py](tests/test_data_generator.py) - Synthetic test data generation
 - [model_comparison_utils.py](model_comparison_utils.py) - Model evaluation and comparison tools
-- [fraud_eda_pipeline.py](fraud_eda_pipeline.py) - Comprehensive EDA pipeline
 - [Trained Models](models/) - Directory containing all trained models and metadata
+## Key Components
+
+### FraudEDACapstone
+
+The `FraudEDACapstone` class in `fraud_eda_pipeline.py` provides a comprehensive exploratory data analysis pipeline specifically designed for fraud detection projects. It includes:
+
+- **Data Quality Assessment**: Automated detection of missing values, duplicates, and data type issues
+- **Categorical Analysis**: Detailed analysis of categorical features with frequency distributions
+- **Outlier Detection**: Multiple methods (IQR, Z-score) for identifying potential anomalies
+- **Multivariate Analysis**: Correlation analysis and network pattern detection
+- **Automated Visualizations**: Built-in plotting functions for data exploration
+
+### DataQualityAssessment
+
+The `DataQualityAssessment` class provides basic data quality checking functionality including missing value detection, duplicate removal, and data type validation. 
+
+**Relationship**: `FraudEDACapstone` is a comprehensive EDA suite that internally uses `DataQualityAssessment` for basic data cleaning, then extends it with fraud-specific analysis like outlier detection, categorical analysis, and multivariate patterns. Think of it as: DataQualityAssessment handles the basics, while FraudEDACapstone provides the complete analytical workflow.
+
 ## Getting Started
 
 1. **Install dependencies:**
@@ -126,12 +159,8 @@ Can machine learning effectively identify fraudulent bank transactions while min
    python model_tester.py
    ```
 
-5. **Use data quality tools:**
-   ```python
-   from data_quality_assessment import DataQualityAssessment
-   dqa = DataQualityAssessment(df)
-   clean_df = dqa.assess_and_clean()
-   ```
+5. **Overall:**
+   Execute fraud_detection.ipynb. This will use the full component list internally.
 
 ##### Contact and Further Information
 
